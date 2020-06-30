@@ -1,65 +1,49 @@
-let inputTitle = document.querySelector("#inputField input");
-let inputText = document.querySelector("#inputField textarea");
-let buttonElement = document.querySelector("#inputField button");
-let cardElement = document.querySelector("#scrapsField");
+let titleInput = document.getElementById("messageTitle");
+let messageInput = document.getElementById("messageBody");
+let addButton = document.getElementById("addButton");
+let scrapsField = document.getElementById("scrapsField");
 
-let cards = JSON.parse(localStorage.getItem("card_list")) || [];
+let scraps = [];
 
-function showCards() {
-  cardElement.innerHTML = "";
+function renderScraps() {
+  scrapsField.innerHTML = "";
 
-  for (const item of cards) {
-    let card = document.createElement("div");
-    card.setAttribute("class", "card text-white bg-dark m-2");
-
-    let cardHeader = document.createElement("div");
-    cardHeader.setAttribute("class", "card-header");
-
-    let cardBody = document.createElement("div");
-    cardBody.setAttribute("class", "card-body");
-
-    let cardContent = document.createElement("p");
-    cardContent.setAttribute("class", "card-text");
-
-    let cardTitle = document.createTextNode(item.title);
-    let cardText = document.createTextNode(item.text);
-
-    cardElement.appendChild(card);
-    card.appendChild(cardHeader);
-    card.appendChild(cardBody);
-    cardBody.appendChild(cardContent);
-
-    cardContent.appendChild(cardText);
-    cardHeader.appendChild(cardTitle);
+  for (const scrap of scraps) {
+    scrapsField.innerHTML += createScrapCard(scrap.title, scrap.message);
   }
 }
 
-showCards();
+function addNewScrap() {
+  let title = titleInput.value;
+  let message = messageInput.value;
 
-function createCard() {
-  let titleText = inputTitle.value;
-  let text = inputText.value;
-  if (validaDados(titleText, text)) {
-    let card = {
-      title: titleText,
-      text: text,
-    };
-    cards.push(card);
-    inputTitle.value = "";
-    inputText.value = "";
-
-    showCards();
-    saveInStorage();
+  if (!messageTitle.value || !messageBody.value) {
+    return alert("Todos os campos devem ser preenchidos!");
   }
-}
-function validaDados(title, text) {
-  if (title.length == 0) return alert(`Preencha todos os campos`);
-  if (text.length == 0) return alert(`Preencha todos os campos`);
-  return true;
+
+  titleInput.value = "";
+  messageInput.value = "";
+
+  scraps.push({ title, message });
+
+  renderScraps();
 }
 
-buttonElement.onclick = createCard;
-
-function saveInStorage() {
-  localStorage.setItem("card_list", JSON.stringify(cards));
+function createScrapCard(title, message) {
+  return `
+  <div class="message-cards card text-white bg-dark m-2">
+  <div class="card-header font-weight-bold">${title}</div>
+  <div class="card-body">
+    <p class="card-text">
+      ${message}
+    </p>
+  </div>
+  <div class="w100 d-flex justify-content-end pr-2 pb-2">
+    <button class="btn btn-danger mr-1">Deletar</button>
+    <button class="btn btn-info">Editar</button>
+  </div>
+</div>
+  `;
 }
+
+addButton.onclick = addNewScrap;
